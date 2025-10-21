@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Halaman Operator</title>
+  <link rel="stylesheet" href="css/operator.css">
+</head>
+
+<body>
+
+  <header>
+    <h2>Panel Operator</h2>
+    <div>
+      <span id="tokenAktif">Token: -</span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <h3>Daftar Siswa</h3>
+
+    <form id="addForm">
+      <input type="text" id="nama" placeholder="Nama siswa" required>
+      <input type="text" id="nis" placeholder="NIS" required>
+      <button type="submit">Tambah</button>
+    </form>
+
+    <div class="table-container">
+      <table id="tabelSiswa">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>NIS</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <hr class="divider">
+
+    <section id="rekapSection">
+      <h3>Rekap Absensi</h3>
+
+      <div id="filterButtons" class="filter-buttons">
+        <button data-filter="hari" class="active">Hari Ini</button>
+        <button data-filter="minggu">1 Minggu Terakhir</button>
+        <button data-filter="bulan">1 Bulan Terakhir</button>
+
+        
+        <div class="month-dropdown-container">
+          <button id="monthButton" class="btn-month">Pilih Bulan ▾</button>
+          <div id="monthDropdown" class="month-dropdown hidden" aria-hidden="true">
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table id="tabelRekap">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama</th>
+              <th>NIS</th>
+              <th>Tanggal</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/operator.js"></script>
+
+
+</body>
+
+</html>

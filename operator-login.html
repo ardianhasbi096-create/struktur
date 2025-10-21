@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Login Operator</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Login Operator</h1>
+    <form id="loginForm">
+      <label for="nickname">Nickname:</label>
+      <input type="text" id="nickname" required placeholder="Masukkan nickname...">
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" required placeholder="Masukkan password...">
+
+      <button type="submit">Login</button>
+    </form>
+
+    <p id="loginStatus" class="status"></p>
+  </div>
+
+  <button id="backToAbsen" class="back-button">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style="margin-right: 6px;">
+      <path d="M6.5 12L2.5 8M2.5 8L6.5 4M2.5 8H13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" />
+    </svg>
+    Kembali ke Absen
+  </button>
+
+  <script src="js/operator-login.js"></script>
+
+  <button id="go-operator" class="hidden">Masuk Halaman Operator</button>
+  <div id="token-container" class="hidden">
+    <p id="token-text"></p>
+  </div>
+
+  <script>
+    document.getElementById('backToAbsen')?.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,256 @@
+{
+  "token": [
+    {
+      "id": "1",
+      "nickname": "admin",
+      "password": "12345",
+      "token": "F11910",
+      "tanggal": "2025-10-20",
+      "token_harian": "F12010"
+    }
+  ],
+  "siswa": [
+    {
+      "id": "1",
+      "nama": "Agatha Davinia Wilhelmina",
+      "nis": "9902"
+    },
+    {
+      "id": "2",
+      "nama": "Aira Ratu Anindita",
+      "nis": "9941"
+    },
+    {
+      "id": "3",
+      "nama": "Almer Tamim Radiputra",
+      "nis": "9944"
+    },
+    {
+      "id": "4",
+      "nama": "Angelina Clarissa Silalahi",
+      "nis": "9905"
+    },
+    {
+      "id": "5",
+      "nama": "Annabelle Sekar Dewayantie",
+      "nis": "9833"
+    },
+    {
+      "id": "6",
+      "nama": "Annaufal Izzatul Ziyad",
+      "nis": "10015"
+    },
+    {
+      "id": "7",
+      "nama": "Ardian Hasbi Putranto",
+      "nis": "10054"
+    },
+    {
+      "id": "8",
+      "nama": "Arina Nurhidayati",
+      "nis": "9979"
+    },
+    {
+      "id": "9",
+      "nama": "Askana Fitri Ratifa",
+      "nis": "9945"
+    },
+    {
+      "id": "10",
+      "nama": "Asyifa Masrutrotul Nazwa",
+      "nis": "10056"
+    },
+    {
+      "id": "11",
+      "nama": "Azkyla Quinn Athirah",
+      "nis": "9982"
+    },
+    {
+      "id": "12",
+      "nama": "Claeresta Galena Astavieva",
+      "nis": "9838"
+    },
+    {
+      "id": "13",
+      "nama": "David Felix Nathanael",
+      "nis": "9879"
+    },
+    {
+      "id": "14",
+      "nama": "Diah Eka Novitasari",
+      "nis": "10018"
+    },
+    {
+      "id": "15",
+      "nama": "Dustin Airell Sulistyo Budi",
+      "nis": "10058"
+    },
+    {
+      "id": "16",
+      "nama": "Ferdian Jusuf Kurniawan",
+      "nis": "10022"
+    },
+    {
+      "id": "17",
+      "nama": "Icha Rifki Saputri",
+      "nis": "9879"
+    },
+    {
+      "id": "18",
+      "nama": "Joshua Pierson Sangap Sinambela",
+      "nis": "10089"
+    },
+    {
+      "id": "19",
+      "nama": "Keane Faeyza Aryokusuma",
+      "nis": "9951"
+    },
+    {
+      "id": "20",
+      "nama": "Kezia Ariella",
+      "nis": "9920"
+    },
+    {
+      "id": "21",
+      "nama": "Maisha Nafiza Ayu",
+      "nis": "9883"
+    },
+    {
+      "id": "22",
+      "nama": "Muhammad Fabian Aldiori",
+      "nis": "9926"
+    },
+    {
+      "id": "23",
+      "nama": "Nada Rahma Salsabila",
+      "nis": "9960"
+    },
+    {
+      "id": "24",
+      "nama": "Nayaka Alfaiz Kevin Wijaya",
+      "nis": "9928"
+    },
+    {
+      "id": "25",
+      "nama": "Nayyara Azzarine Farassila",
+      "nis": "9961"
+    },
+    {
+      "id": "26",
+      "nama": "Panji Dwi Gantara",
+      "nis": "9853"
+    },
+    {
+      "id": "27",
+      "nama": "Rava Ibrahimsyah",
+      "nis": "10076"
+    },
+    {
+      "id": "28",
+      "nama": "Revan Nur Hakim",
+      "nis": "9859"
+    },
+    {
+      "id": "29",
+      "nama": "Richard Ingwer Panjaitan",
+      "nis": "9895"
+    },
+    {
+      "id": "30",
+      "nama": "Satria Delvino",
+      "nis": "9896"
+    },
+    {
+      "id": "31",
+      "nama": "Shiraj Nazli",
+      "nis": "10078"
+    },
+    {
+      "id": "32",
+      "nama": "Shyalom Titania Putri Purbaningrum",
+      "nis": "9861"
+    },
+    {
+      "id": "33",
+      "nama": "Welby Arikael Wisnu",
+      "nis": "9864"
+    },
+    {
+      "id": "34",
+      "nama": "William Rahman",
+      "nis": "10080"
+    },
+    {
+      "id": "35",
+      "nama": "Zafinza Naufal Hakim",
+      "nis": "10091"
+    },
+    {
+      "id": "36",
+      "nama": "Zulfa Nawirah",
+      "nis": "9973"
+    }
+  ],
+  "rekap": [
+    {
+      "id": "1760829278169",
+      "nis": "9902",
+      "tanggal": "2025-10-18",
+      "status": "Hadir"
+    },
+    {
+      "id": "1760829553252",
+      "nis": "9951",
+      "tanggal": "2025-10-18",
+      "status": "Hadir"
+    },
+    {
+      "id": "1760908946502",
+      "nis": "9951",
+      "tanggal": "2025-10-19",
+      "status": "Hadir"
+    },
+    {
+      "id": "1760916523367",
+      "nis": "9879",
+      "tanggal": "2025-10-19",
+      "status": "Hadir"
+    },
+    {
+      "id": "1760917235997",
+      "nis": "9926",
+      "tanggal": "2025-10-19",
+      "status": "Hadir"
+    },
+    {
+      "id": "1760918721756",
+      "nis": "10054",
+      "tanggal": "2025-10-20",
+      "status": "Hadir"
+    },
+    {
+      "id": "1760920259392",
+      "nis": "9859",
+      "tanggal": "2025-10-20",
+      "status": "Hadir"
+    },
+    {
+      "id": "1760924906051",
+      "nis": "10091",
+      "tanggal": "2025-10-20",
+      "status": "Hadir"
+    },
+    {
+      "id": "1760925071263",
+      "nis": "10022",
+      "tanggal": "2025-10-20",
+      "status": "Hadir"
+    },
+    {
+      "id": "1760925432957",
+      "nis": "10078",
+      "tanggal": "2025-10-20",
+      "status": "Hadir"
+    }
+  ]
+}

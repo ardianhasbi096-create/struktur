@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rekap Absensi</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="page-container">
+        <header>
+            <h2>Rekap Absensi</h2>
+            <div>
+                <button onclick="window.location.href='operator.html'">Kembali ke Dashboard</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Filter & tampilan kalender -->
+            <div class="filter-controls">
+                <label for="viewMode">Tampilan:</label>
+                <select id="viewMode" onchange="changeViewMode(this.value)">
+                    <option value="hari">Hari Ini</option>
+                    <option value="minggu">Minggu Ini</option>
+                    <option value="bulan">Bulanan</option>
+                </select>
+
+                <div id="monthSelector" style="display: none;">
+                    <label for="monthPicker">Pilih Bulan:</label>
+                    <input type="month" id="monthPicker" onchange="loadBulan(this.value)">
+                </div>
+
+                <div style="margin-left:12px;">
+                    <button id="toggleViewBtn" onclick="toggleView()">Tampilkan: Grid</button>
+                </div>
+            </div>
+
+            <div id="calendarView" class="calendar-view"></div>
+
+            <div id="rekapGridContainer" class="rekap-container" style="display:none;">
+                <h2>Ringkasan Kehadiran</h2>
+                <div id="rekapGrid" class="rekap-grid"></div>
+            </div>
+
+            <div class="table-container">
+                <h3>Daftar Kehadiran</h3>
+                <table id="tabelRekap">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>NIS</th>
+                            <th>Tanggal</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/rekap.js"></script>
+</body>
+
+</html>

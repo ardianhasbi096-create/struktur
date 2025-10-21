@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Absensi Siswa</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>📋 Absensi Siswa 📋</h1>
+    <form id="absenForm">
+      <label for="nis">NIS Siswa:</label>
+      <input type="text" id="nis" required placeholder="Masukkan NIS...">
+
+      <label for="token">Token Hari Ini:</label>
+      <input type="text" id="token" required placeholder="Masukkan Token...">
+
+      <button type="submit">Kirim Absen</button>
+    </form>
+
+    <p id="status" class="status"></p>
+  </div>
+
+  <script src="js/siswa.js"></script>
+  <script src="js/absen.js"></script>
+
+  <a href="operator-login.html" class="operator-corner">Masuk Admin</a>
+
+</body>
+
+</html>
