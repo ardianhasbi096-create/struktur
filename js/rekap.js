@@ -3,11 +3,15 @@ const API_URL = "http://localhost:3000";
 
 let currentViewMode = 'hari';
 let currentData = [];
-let preferredLayout = localStorage.getItem('rekapLayout') || 'grid'; // 'table' or 'grid'
+let selectedDate = null; // untuk filter tanggal spesifik
 
 // === Fungsi Utilitas Tanggal ===
 function formatDate(date) {
-    return date.toISOString().slice(0, 10);
+    // Gunakan timezone lokal untuk menghindari masalah UTC
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 function getWeekDates() {
@@ -17,8 +21,8 @@ function getWeekDates() {
     const monday = new Date(today);
     monday.setDate(today.getDate() - today.getDay() + 1);
 
-    // Ambil 7 hari dari Senin
-    for (let i = 0; i < 7; i++) {
+    // Ambil hanya 5 hari kerja (Senin-Jumat)
+    for (let i = 0; i < 5; i++) {
         const date = new Date(monday);
         date.setDate(monday.getDate() + i);
         dates.push(formatDate(date));
@@ -48,7 +52,14 @@ async function loadData(viewMode = 'hari', specificDate = null) {
             fetch(`${API_URL}/siswa`)
         ]);
 
-        if (!rekapRes.ok || !siswaRes.ok) throw new Error('Gagal mengambil data');
+        if (!rekapRes.ok || !siswaRes.ok) {
+            console.warn('API tidak tersedia, menggunakan data kosong');
+            // Jika API gagal, tetap render dengan data kosong
+            currentData = [];
+            renderTable(currentData);
+            renderCalendarView(currentData, viewMode, specificDate);
+            return;
+        }
 
         const [rekap, siswa] = await Promise.all([
             rekapRes.json(),
@@ -64,9 +75,6 @@ async function loadData(viewMode = 'hari', specificDate = null) {
         } else if (viewMode === 'minggu') {
             const weekDates = getWeekDates();
             filteredData = rekap.filter(r => weekDates.includes(r.tanggal));
-        } else if (viewMode === 'bulan') {
-            const monthDates = getMonthDates(specificDate);
-            filteredData = rekap.filter(r => monthDates.includes(r.tanggal));
         }
 
         // Gabungkan dengan data siswa
@@ -83,33 +91,60 @@ async function loadData(viewMode = 'hari', specificDate = null) {
         renderCalendarView(currentData, viewMode, specificDate);
     } catch (err) {
         console.error('Error loading data:', err);
-        alert('Gagal memuat data rekap');
+        // Jika error, tetap render dengan data kosong dan tampilkan notifikasi
+        currentData = [];
+        renderTable(currentData);
+        renderCalendarView(currentData, viewMode, specificDate);
+        showNotification('Data rekap tidak dapat dimuat, menampilkan kalender kosong', 'warning');
     }
 }
 
 function renderTable(data) {
     const tbody = document.querySelector('#tabelRekap tbody');
+    const tableTitle = document.getElementById('tableTitle');
+    const showAllBtn = document.getElementById('showAllBtn');
     tbody.innerHTML = '';
 
-    data.forEach((r, i) => {
+    // Filter data berdasarkan selectedDate jika ada
+    let displayData = data;
+    if (selectedDate && currentViewMode === 'minggu') {
+        displayData = data.filter(r => r.tanggal === selectedDate);
+        tableTitle.textContent = `Daftar Kehadiran - ${selectedDate}`;
+        showAllBtn.style.display = 'inline-block';
+    } else {
+        tableTitle.textContent = 'Daftar Kehadiran';
+        showAllBtn.style.display = 'none';
+    }
+
+    if (displayData.length === 0) {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${i + 1}</td>
-            <td>${r.nama}</td>
-            <td>${r.nis}</td>
-            <td>${r.tanggal}</td>
-            <td>${r.status || 'Hadir'}</td>
-            <td>
-                <select onchange="updateStatus('${r.id}', this.value)">
-                    <option value="Hadir" ${!r.status || r.status === 'Hadir' ? 'selected' : ''}>Hadir</option>
-                    <option value="Izin" ${r.status === 'Izin' ? 'selected' : ''}>Izin</option>
-                    <option value="Sakit" ${r.status === 'Sakit' ? 'selected' : ''}>Sakit</option>
-                    <option value="Alpa" ${r.status === 'Alpa' ? 'selected' : ''}>Alpa</option>
-                </select>
+            <td colspan="6" style="text-align: center; padding: 20px; color: #64748b;">
+                Tidak ada data kehadiran untuk tanggal ini
             </td>
         `;
         tbody.appendChild(row);
-    });
+    } else {
+        displayData.forEach((r, i) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${i + 1}</td>
+                <td>${r.nama}</td>
+                <td>${r.nis}</td>
+                <td>${r.tanggal}</td>
+                <td>${r.status || 'Hadir'}</td>
+                <td>
+                    <select onchange="updateStatus('${r.id}', this.value)">
+                        <option value="Hadir" ${!r.status || r.status === 'Hadir' ? 'selected' : ''}>Hadir</option>
+                        <option value="Izin" ${r.status === 'Izin' ? 'selected' : ''}>Izin</option>
+                        <option value="Sakit" ${r.status === 'Sakit' ? 'selected' : ''}>Sakit</option>
+                        <option value="Alpa" ${r.status === 'Alpa' ? 'selected' : ''}>Alpa</option>
+                    </select>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
 }
 
 function renderGrid(dates, data) {
@@ -146,13 +181,11 @@ function renderCalendarView(data, viewMode, specificDate = null) {
         dates = [formatDate(new Date())];
     } else if (viewMode === 'minggu') {
         dates = getWeekDates();
-    } else {
-        dates = getMonthDates(specificDate);
     }
 
-    // Render header hari (Senin-Minggu)
+    // Render header hari (Senin-Jumat untuk minggu)
     if (viewMode !== 'hari') {
-        const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+        const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum'];
         days.forEach(day => {
             const cell = document.createElement('div');
             cell.className = 'date-cell header';
@@ -188,36 +221,85 @@ function renderCalendarView(data, viewMode, specificDate = null) {
             else cell.classList.add('hadir');
         }
 
+        // Tambahkan event listener untuk klik tanggal (hanya untuk minggu)
+        if (viewMode === 'minggu') {
+            cell.style.cursor = 'pointer';
+            cell.addEventListener('click', () => {
+                selectedDate = date;
+                renderTable(data); // Re-render tabel dengan filter tanggal
+                // Highlight tanggal yang dipilih
+                document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('selected'));
+                cell.classList.add('selected');
+            });
+        }
+
         container.appendChild(cell);
     });
+}
 
-    // render grid view jika 
-    const gridContainerWrapper = document.getElementById('rekapGridContainer');
-    if (preferredLayout === 'grid') {
-        if (gridContainerWrapper) gridContainerWrapper.style.display = '';
-        renderGrid(dates, data);
-        // hide table view 
-        document.querySelector('.table-container').style.display = 'none';
-    } else {
-        if (gridContainerWrapper) gridContainerWrapper.style.display = 'none';
-        document.querySelector('.table-container').style.display = '';
-    }
+
+
+function showDateDetails(dateStr, dayData) {
+    // Buat modal untuk menampilkan detail tanggal
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content date-detail-modal">
+            <h3>Detail Kehadiran - ${dateStr}</h3>
+            <div class="date-detail-content">
+                ${dayData.length > 0 ?
+            dayData.map(record => `
+                        <div class="detail-item">
+                            <span>NIS: ${record.nis}</span>
+                            <span>Status: ${record.status || 'Hadir'}</span>
+                        </div>
+                    `).join('') :
+            '<p>Tidak ada data kehadiran untuk tanggal ini</p>'
+        }
+            </div>
+            <button onclick="this.closest('.modal').remove()">Tutup</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Tutup modal saat klik di luar
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+}
+
+// Fungsi notifikasi
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'warning' ? '#f59e0b' : '#10b981'};
+        color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        font-weight: 500;
+        animation: slideIn 0.3s ease-out;
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
 }
 
 // logika kontrol ui
 function changeViewMode(mode) {
     currentViewMode = mode;
-    document.getElementById('monthSelector').style.display =
-        mode === 'bulan' ? 'inline-block' : 'none';
-
-    if (mode === 'bulan') {
-        const now = new Date();
-        const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        document.getElementById('monthPicker').value = yearMonth;
-        loadData(mode, yearMonth);
-    } else {
-        loadData(mode);
-    }
+    selectedDate = null; // reset selected date saat ganti mode
+    loadData(mode);
 }
 
 async function updateStatus(rekapId, newStatus) {
@@ -238,22 +320,19 @@ async function updateStatus(rekapId, newStatus) {
     }
 }
 
-function loadBulan(yearMonth) {
-    loadData('bulan', yearMonth);
-}
+
 
 function toggleView() {
-    preferredLayout = (preferredLayout === 'grid') ? 'table' : 'grid';
-    localStorage.setItem('rekapLayout', preferredLayout);
-    const btn = document.getElementById('toggleViewBtn');
-    if (btn) btn.textContent = `Tampilkan: ${preferredLayout === 'grid' ? 'Grid' : 'Tabel'}`;
-    // rerender current view
-    if (currentViewMode === 'bulan') {
-        const mp = document.getElementById('monthPicker');
-        loadData('bulan', mp ? mp.value : null);
-    } else {
-        loadData(currentViewMode);
-    }
+    // Mode grid sudah dihapus, jadi fungsi ini tidak diperlukan lagi
+    // Tetap ada untuk kompatibilitas jika ada referensi di HTML
+    return;
+}
+
+function showAllData() {
+    selectedDate = null;
+    renderTable(currentData);
+    // Remove highlight dari semua tanggal
+    document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('selected'));
 }
 
 // Inisialisasi
@@ -266,18 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // set kontrol ui
     const viewSelect = document.getElementById('viewMode');
     if (viewSelect) viewSelect.value = view;
-    if (view === 'bulan') {
-        document.getElementById('monthSelector').style.display = 'inline-block';
-        if (month) {
-            const mp = document.getElementById('monthPicker');
-            if (mp) mp.value = month;
-        }
-    }
 
-    // inisialisasi toggle button label
-    const toggleBtn = document.getElementById('toggleViewBtn');
-    if (toggleBtn) toggleBtn.textContent = `Tampilkan: ${preferredLayout === 'grid' ? 'Grid' : 'Tabel'}`;
+    // Mode grid sudah dihapus, tidak perlu inisialisasi toggle button
 
-    if (view === 'bulan') loadData('bulan', month || null);
-    else loadData(view);
+    loadData(view);
 });

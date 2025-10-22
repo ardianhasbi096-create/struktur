@@ -23,28 +23,19 @@
                 <select id="viewMode" onchange="changeViewMode(this.value)">
                     <option value="hari">Hari Ini</option>
                     <option value="minggu">Minggu Ini</option>
-                    <option value="bulan">Bulanan</option>
                 </select>
 
-                <div id="monthSelector" style="display: none;">
-                    <label for="monthPicker">Pilih Bulan:</label>
-                    <input type="month" id="monthPicker" onchange="loadBulan(this.value)">
-                </div>
-
-                <div style="margin-left:12px;">
-                    <button id="toggleViewBtn" onclick="toggleView()">Tampilkan: Grid</button>
-                </div>
+                <!-- Mode grid sudah dihapus, tidak ada tombol toggle -->
             </div>
 
             <div id="calendarView" class="calendar-view"></div>
 
-            <div id="rekapGridContainer" class="rekap-container" style="display:none;">
-                <h2>Ringkasan Kehadiran</h2>
-                <div id="rekapGrid" class="rekap-grid"></div>
-            </div>
+            <!-- Mode grid sudah dihapus, tidak ada container grid -->
 
             <div class="table-container">
-                <h3>Daftar Kehadiran</h3>
+                <h3 id="tableTitle">Daftar Kehadiran</h3>
+                <button id="showAllBtn" onclick="showAllData()" style="display:none; margin-bottom:10px;">Tampilkan
+                    Semua</button>
                 <table id="tabelRekap">
                     <thead>
                         <tr>

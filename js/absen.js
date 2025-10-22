@@ -1,4 +1,4 @@
-// absen.js logika absensi le
+// absen.js - Logika absensi siswa
 const API_URL = "http://localhost:3000";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -27,10 +27,23 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!tokenRes.ok) throw new Error("Gagal mengecek token");
 
             const tokenData = await tokenRes.json();
-            const today = new Date().toISOString().slice(0, 10);
+            // Gunakan tanggal dari database sebagai acuan, bukan dari browser
+            const today = tokenData[0]?.tanggal || new Date().toISOString().slice(0, 10);
+            console.log("Today (from DB):", today);
+            console.log("Token data:", tokenData);
+            console.log("Input token:", token);
+
+            // Debug: cek setiap token
+            tokenData.forEach(t => {
+                console.log(`Token in DB: tanggal=${t.tanggal}, token_harian=${t.token_harian}`);
+                console.log(`Comparing: ${t.tanggal} === ${today} && ${t.token_harian} === ${token}`);
+            });
+
             const validToken = tokenData.find(t =>
                 t.tanggal === today && t.token_harian === token
             );
+
+            console.log("Valid token found:", validToken);
 
             if (!validToken) {
                 showStatus("Token tidak valid atau sudah expired!", "error");
@@ -78,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!absenRes.ok) throw new Error("Gagal mencatat absensi");
 
             showStatus("Absensi berhasil dicatat!", "success");
-            
+
             absenForm.reset();
 
         } catch (err) {

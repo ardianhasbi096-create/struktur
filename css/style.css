@@ -1,12 +1,24 @@
 :root {
-  --bg: #f6f9fb;
-  --card: #ffffff;
-  --muted: #6b7280;
+  --bg: #e6f3ff;
+  /* Putih kebiruan sedikit */
+  --card: #f0f8ff;
+  /* Putih kebiruan */
+  --muted: #64748b;
+  /* Abu-abu kebiruan */
   --accent: #0ea5a3;
+  /* Biru tosca */
   --accent-strong: #047a76;
-  --success: #16a34a;
+  /* Biru tosca gelap */
+  --success: #4fc3a1;
+  /* Hijau tosca */
   --danger: #ef4444;
-  --glass: rgba(255, 255, 255, 0.6);
+  /* Merah tetap */
+  --glass: rgba(240, 248, 255, 0.8);
+  /* Glass dengan putih kebiruan */
+  --light-green: #d1fae5;
+  /* Hijau muda */
+  --light-blue: #dbeafe;
+  /* Biru muda */
 }
 
 * {
@@ -17,7 +29,7 @@ body {
   font-family: Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial;
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(180deg, #eef7f7 0%, #f8fbff 100%);
+  background: linear-gradient(180deg, var(--bg) 0%, #f0f8ff 100%);
   color: #0f172a;
   padding: 28px;
   display: flex;
@@ -100,6 +112,7 @@ button:hover:not(:disabled) {
   box-shadow: 0 4px 16px rgba(14, 165, 163, 0.16);
 }
 
+/* Container untuk form absensi */
 .container {
   background: var(--card);
   border-radius: 12px;
@@ -108,6 +121,7 @@ button:hover:not(:disabled) {
   padding: 26px
 }
 
+/* Form elements untuk absensi */
 h1 {
   margin: 0 0 8px 0;
   color: var(--accent-strong);
@@ -278,7 +292,7 @@ table {
 }
 
 thead th {
-  background: #f8fafc;
+  background: var(--light-blue);
   text-align: left;
   padding: 10px;
   border-bottom: 1px solid #eef2f3
@@ -292,33 +306,163 @@ tbody td {
 /* Calendar view */
 .calendar-view {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+  justify-items: center;
+}
+
+/* Monthly calendar specific */
+.calendar-view:has(.month-header) {
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  margin: 18px 0
+  gap: 4px;
+}
+
+/* Month header styling */
+.month-header {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  margin-bottom: 10px;
+  padding: 10px;
+  background: var(--card);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Date cell variations for monthly calendar */
+.date-cell .current-month {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.date-cell .other-month {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.date-cell.clickable {
+  cursor: pointer;
+}
+
+.date-cell.clickable:hover {
+  background: var(--light-blue);
+}
+
+.date-cell.disabled {
+  background: var(--light-blue);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Date detail modal */
+.date-detail-modal {
+  max-width: 500px;
+  padding: 20px;
+}
+
+.date-detail-modal h3 {
+  margin: 0 0 15px 0;
+  color: var(--accent-strong);
+  text-align: center;
+}
+
+.date-detail-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-item span:first-child {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.detail-item span:last-child {
+  font-weight: 600;
+  color: var(--accent-strong);
 }
 
 .date-cell {
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #fff;
-  border: 1px solid #f1f5f9;
-  text-align: center
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  font-weight: 500;
+  min-height: 60px;
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.date-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.date-cell.header {
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 2px 6px rgba(14, 165, 163, 0.2);
+}
+
+.date-cell.header:hover {
+  transform: none;
+  box-shadow: 0 2px 6px rgba(14, 165, 163, 0.2);
 }
 
 .date-cell.hadir {
-  background: #ecfdf5
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #10b981;
 }
 
 .date-cell.izin {
-  background: #fff7ed
+  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+  border-color: #f97316;
 }
 
 .date-cell.sakit {
-  background: #eff6ff
+  background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%);
+  border-color: #3b82f6;
 }
 
 .date-cell.alpa {
-  background: #fff1f2
+  background: linear-gradient(135deg, #fff1f2 0%, #fecaca 100%);
+  border-color: #ef4444;
+}
+
+.date-cell.selected {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transform: scale(1.05);
+}
+
+.date-cell small {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.2;
+  font-weight: 500;
 }
 
 @media (max-width:600px) {
@@ -332,7 +476,18 @@ tbody td {
   }
 
   .calendar-view {
-    grid-template-columns: repeat(2, 1fr)
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 6px;
+  }
+
+  .date-cell {
+    padding: 8px;
+    min-height: 50px;
+    font-size: 0.9rem;
+  }
+
+  .date-cell small {
+    font-size: 0.7rem;
   }
 }
 
@@ -367,7 +522,7 @@ header button {
 }
 
 header button:hover {
-  background: #f1fbfa;
+  background: var(--light-green);
 }
 
 /* Layout utama */
@@ -466,7 +621,7 @@ thead th {
 }
 
 tbody tr:hover {
-  background: #f8fafc;
+  background: var(--light-blue);
   transition: 0.2s;
 }
 
@@ -500,7 +655,7 @@ tbody tr:hover {
 }
 
 .month-item:hover {
-  background: #ecfdf5;
+  background: var(--light-green);
   transform: translateY(-2px);
 }
 
@@ -531,7 +686,7 @@ tbody tr:hover {
   position: absolute;
   top: 110%;
   left: 0;
-  background: white;
+  background: var(--card);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   border-radius: 10px;
   padding: 10px;
@@ -554,7 +709,7 @@ tbody tr:hover {
 }
 
 .month-dropdown button:hover {
-  background-color: #f0f0f0;
+  background-color: var(--light-blue);
 }
 
 .hidden {
@@ -574,92 +729,44 @@ tbody tr:hover {
   }
 }
 
-/* === Tampilan umum rekap (grid/boxes) === */
-.rekap-container {
-  margin: 30px auto;
-  max-width: 1200px;
-  padding: 0 20px;
+/* Notification animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.rekap-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-  font-weight: 600;
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
 
-/* === Grid rapi untuk box harian/bulanan === */
-.rekap-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
-  justify-items: center;
-}
+/* Mode grid sudah dihapus dari sistem rekap */
 
-/* === Box rekap individual === */
-.rekap-box {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  width: 140px;
-  height: 100px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.rekap-box:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-}
-
-.rekap-box .tanggal {
-  font-weight: 600;
-  color: #333;
-  font-size: 1rem;
-}
-
-.rekap-box .status {
-  margin-top: 6px;
+#showAllBtn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
   font-size: 0.9rem;
-  color: #4fc3a1;
-  font-weight: 500;
+  transition: background 0.2s;
 }
 
-/* Warna status opsional */
-.status-hadir {
-  color: #4caf50;
-}
-
-.status-izin {
-  color: #ff9800;
-}
-
-.status-sakit {
-  color: #2196f3;
-}
-
-.status-alpa {
-  color: #f44336;
-}
-
-/* === Responsif === */
-@media (max-width: 600px) {
-  .rekap-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  }
-
-  .rekap-box {
-    width: 110px;
-    height: 85px;
-    padding: 10px;
-  }
-
-  .rekap-box .tanggal {
-    font-size: 0.9rem;
-  }
+#showAllBtn:hover {
+  background: var(--accent-strong);
 }

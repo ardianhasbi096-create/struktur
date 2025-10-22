@@ -55,43 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
       loginStatus.textContent = "Login berhasil! Mengalihkan ke halaman operator...";
       loginStatus.className = "status success";
 
-      // Cek token harian (format tanggal: yyyy-mm-dd)
-      const todayIso = new Date().toISOString().slice(0, 10); 
-      if (String(operator.tanggal) !== todayIso) {
-        // Buat token baru dengan format F1 + dd + mm
-        const newTokenValue = generateToken();
-        const newTokenObj = {
-          ...operator,
-          token_harian: newTokenValue,
-          tanggal: todayIso
-        };
-        // pastikan id numeric untuk json-server (jika string, ubah ke number)
-        const idForUrl = Number(operator.id);
-        let putRes;
-        try {
-          putRes = await fetch(`${API_URL}/token/${idForUrl}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newTokenObj),
-          });
-        } catch (err) {
-          loginStatus.textContent = "Gagal menghubungi server saat update token!";
-          loginStatus.className = "status error";
-          console.error("Gagal PUT token:", err);
-          return;
-        }
-        if (!putRes.ok) {
-          loginStatus.textContent = `Update token gagal: ${putRes.status} ${putRes.statusText}`;
-          loginStatus.className = "status error";
-          console.error("PUT response:", putRes);
-          return;
-        }
-
-        localStorage.setItem("currentToken", newTokenValue);
-      } else {
-        localStorage.setItem("currentToken", operator.token_harian);
-      }
-
       // Simpan info login dan pindah ke dashboard operator
       localStorage.setItem("operatorLogin", nickname);
 
@@ -107,10 +70,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-function generateToken() {
-  const today = new Date();
-  const tanggal = String(today.getDate()).padStart(2, '0');
-  const bulan = String(today.getMonth() + 1).padStart(2, '0');
-  return `F1${tanggal}${bulan}`;
 
-}

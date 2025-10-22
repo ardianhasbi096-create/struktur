@@ -29,14 +29,38 @@ async function loadToken() {
     if (Array.isArray(data) && data.length > 0) {
       const d = new Date();
       const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      const todayToken = data.find(d => d.tanggal === today);
-      if (todayToken && todayToken.token_harian) {
-        tokenEl.textContent = `Token: ${todayToken.token_harian}`;
+      const operator = data[0]; // Ambil operator pertama (asumsi hanya satu)
+
+      // Selalu cek dan update token jika tanggal berbeda
+      if (operator.tanggal !== today) {
+        const newTokenValue = generateToken();
+        const newTokenObj = {
+          ...operator,
+          token_harian: newTokenValue,
+          tanggal: today
+        };
+
+        try {
+          const putRes = await fetch(`${API_URL}/token/${operator.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newTokenObj),
+          });
+
+          if (putRes.ok) {
+            console.info("Token berhasil diupdate otomatis untuk hari ini");
+            tokenEl.textContent = `Token: ${newTokenValue}`;
+          } else {
+            console.error("Gagal update token otomatis:", putRes.status);
+            tokenEl.textContent = `Token: -`;
+          }
+        } catch (err) {
+          console.error("Error updating token otomatis:", err);
+          tokenEl.textContent = `Token: -`;
+        }
       } else {
-        // fallback: tampilkan token terakhir yang tersedia 
-        const latest = data[0];
-        tokenEl.textContent = `Token: ${latest.token_harian || '-'} (terakhir: ${latest.tanggal || 'unknown'})`;
-        console.info("Tidak ada token untuk hari ini. Jika Anda baru saja login, pastikan login berhasil dan server json-server sedang berjalan sehingga token dapat diperbarui.");
+        // Tanggal sama, tampilkan token yang ada
+        tokenEl.textContent = `Token: ${operator.token_harian}`;
       }
     } else {
       tokenEl.textContent = `Token: -`;
@@ -44,6 +68,50 @@ async function loadToken() {
   } catch (err) {
     console.error("Gagal ambil token:", err);
   }
+}
+
+// Fungsi untuk update token otomatis jika tanggal berbeda
+async function updateTokenIfNeeded(data, today) {
+  if (!Array.isArray(data) || data.length === 0) return false;
+
+  const operator = data[0]; // Ambil operator pertama (asumsi hanya satu)
+  if (operator.tanggal !== today) {
+    // Generate token baru
+    const newTokenValue = generateToken();
+    const newTokenObj = {
+      ...operator,
+      token_harian: newTokenValue,
+      tanggal: today
+    };
+
+    try {
+      const putRes = await fetch(`${API_URL}/token/${operator.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTokenObj),
+      });
+
+      if (!putRes.ok) {
+        console.error("Gagal update token otomatis:", putRes.status);
+        return false;
+      } else {
+        console.info("Token berhasil diupdate otomatis untuk hari ini");
+        return true;
+      }
+    } catch (err) {
+      console.error("Error updating token otomatis:", err);
+      return false;
+    }
+  }
+  return false;
+}
+
+// Fungsi generate token (sama seperti di operator-login.js)
+function generateToken() {
+  const date = new Date();
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `F1${day}${month}`;
 }
 
 // Load daftar siswa 
@@ -104,7 +172,7 @@ async function hapusSiswa(id) {
 }
 window.hapusSiswa = hapusSiswa;
 
-// Rekap manual (sementara) 
+// Rekap manual (sementara)
 async function loadRekap(filter = "hari") {
   try {
     const res = await fetch(`${API_URL}/rekap`);
@@ -124,10 +192,6 @@ async function loadRekap(filter = "hari") {
       const mingguLalu = new Date(now);
       mingguLalu.setDate(now.getDate() - 7);
       filtered = data.filter((r) => new Date(r.tanggal) >= mingguLalu);
-    } else if (filter === "bulan") {
-      const bulanLalu = new Date(now);
-      bulanLalu.setMonth(now.getMonth() - 1);
-      filtered = data.filter((r) => new Date(r.tanggal) >= bulanLalu);
     }
 
     // gabungkan nama siswa ke rekap (cocokkan nis sebagai string)
@@ -142,6 +206,25 @@ async function loadRekap(filter = "hari") {
   }
 }
 
+// Fungsi untuk update status rekap
+async function updateStatus(rekapId, newStatus) {
+  try {
+    const res = await fetch(`${API_URL}/rekap/${rekapId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+
+    if (!res.ok) throw new Error('Gagal update status');
+
+    // Reload data setelah update
+    await loadRekap("hari");
+  } catch (err) {
+    console.error('Error updating status:', err);
+    alert('Gagal mengubah status kehadiran');
+  }
+}
+
 function tampilkanRekap(data) {
   tabelRekap.innerHTML = "";
   data.forEach((r, i) => {
@@ -151,6 +234,15 @@ function tampilkanRekap(data) {
       <td>${r.nama || 'Tidak ditemukan'}</td>
       <td>${r.nis}</td>
       <td>${r.tanggal}</td>
+      <td>${r.status || 'Hadir'}</td>
+      <td>
+        <select onchange="updateStatus('${r.id}', this.value)">
+          <option value="Hadir" ${r.status === 'Hadir' ? 'selected' : ''}>Hadir</option>
+          <option value="Izin" ${r.status === 'Izin' ? 'selected' : ''}>Izin</option>
+          <option value="Sakit" ${r.status === 'Sakit' ? 'selected' : ''}>Sakit</option>
+          <option value="Alpa" ${r.status === 'Alpa' ? 'selected' : ''}>Alpa</option>
+        </select>
+      </td>
     `;
     tabelRekap.appendChild(row);
   });
@@ -165,16 +257,6 @@ filterButtons.forEach((btn) => {
       window.location.href = `rekap.html?view=minggu`;
       return;
     }
-    // jika bulan, tampilkan dropdown pilihan 12 bulan terakhir (inline)
-    if (filter === 'bulan') {
-      buildMonthDropdown();
-      const dropdown = document.getElementById('monthDropdown');
-      if (dropdown) {
-        dropdown.classList.remove('hidden');
-        dropdown.setAttribute('aria-hidden', 'false');
-      }
-      return;
-    }
     // default: hari
     filterButtons.forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
@@ -182,46 +264,7 @@ filterButtons.forEach((btn) => {
   });
 });
 
-// model bulan jatuh (anjai)
-function buildMonthDropdown(containerId = 'monthDropdown') {
-  const dropdown = document.getElementById(containerId);
-  if (!dropdown) return;
-  dropdown.innerHTML = '';
-  const now = new Date();
-  for (let i = 0; i < 12; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    const label = d.toLocaleString('default', { month: 'long', year: 'numeric' });
-    const item = document.createElement('div');
-    item.className = 'month-item';
-    item.textContent = label;
-    item.dataset.ym = ym;
-    item.addEventListener('click', () => {
-      // buka rekap.html dengan parameter
-      window.location.href = `rekap.html?view=bulan&month=${ym}`;
-    });
-    dropdown.appendChild(item);
-  }
-}
 
-// toggle dropdown
-document.addEventListener('click', (e) => {
-  const monthBtn = document.getElementById('monthButton');
-  const monthDropdown = document.getElementById('monthDropdown');
-  if (!monthBtn || !monthDropdown) return;
-  if (monthBtn.contains(e.target)) {
-    monthDropdown.classList.toggle('hidden');
-    const hidden = monthDropdown.classList.contains('hidden');
-    monthDropdown.setAttribute('aria-hidden', hidden ? 'true' : 'false');
-  } else if (!monthDropdown.contains(e.target)) {
-    // click outside -> hide
-    monthDropdown.classList.add('hidden');
-    monthDropdown.setAttribute('aria-hidden', 'true');
-  }
-});
-
-// build dropdown 
-document.addEventListener('DOMContentLoaded', () => buildMonthDropdown());
 
 // Tombol logout
 logoutBtn.addEventListener("click", () => {

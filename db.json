@@ -5,8 +5,8 @@
       "nickname": "admin",
       "password": "12345",
       "token": "F11910",
-      "tanggal": "2025-10-20",
-      "token_harian": "F12010"
+      "tanggal": "2025-10-22",
+      "token_harian": "F12210"
     }
   ],
   "siswa": [
@@ -250,6 +250,30 @@
       "id": "1760925432957",
       "nis": "10078",
       "tanggal": "2025-10-20",
+      "status": "Hadir"
+    },
+    {
+      "id": "1761063276658",
+      "nis": "9951",
+      "tanggal": "2025-10-21",
+      "status": "Hadir"
+    },
+    {
+      "id": "1761083049547",
+      "nis": "10022",
+      "tanggal": "2025-10-21",
+      "status": "Hadir"
+    },
+    {
+      "id": "1761083049548",
+      "nis": "9951",
+      "tanggal": "2025-10-22",
+      "status": "Hadir"
+    },
+    {
+      "id": "1761092394133",
+      "nis": "10080",
+      "tanggal": "2025-10-22",
       "status": "Hadir"
     }
   ]
